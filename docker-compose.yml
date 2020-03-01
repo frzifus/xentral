@@ -1,11 +1,26 @@
 version: '3'
 
 services:
-  xentral:
-    image: lobaro/xentral-docker:latest
+  app:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
     restart: always
     volumes:
-      - /var/data/xentral/userdata:/var/www/html/userdata
-      - /var/data/xentral/conf:/var/www/html/conf
-      # Allows do run the update faster after recreating the container
-      - /var/data/xentral/download:/var/www/html/download
+      - ./volume/userdata:/var/www/html/userdata
+      - ./volume/conf:/var/www/html/conf
+     # Allows do run the update faster after recreating the container
+      - ./volume/download:/var/www/html/download
+    ports:
+      - "127.0.0.1:8080:80"
+
+  database:
+    image: mariadb
+    restart: always
+    environment:
+      - MYSQL_USER=xentral
+      - MYSQL_PASSWORD=defaultPassword
+      - MYSQL_ROOT_PASSWORD=defaultRootPassword
+      - MYSQL_DATABASE=xentral
+    volumes:
+      - ./volume/database:/var/lib/mysql
